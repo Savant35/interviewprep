@@ -2,7 +2,7 @@ interface Feedback {
   id: string;
   interviewId: string;
 
-  // ─── NEW per‐question breakdown ───────────────────────────
+  // ───  per‐question breakdown ───────────────────────────
   perQuestionFeedback: {
     question: string;
     answer: string;
