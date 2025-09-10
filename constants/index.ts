@@ -101,15 +101,18 @@ const questionFeedbackSchema = z.object({
   question: z
     .string()
     .describe("The specific question that was asked to the candidate."),
+  userAnswer: z
+    .string()
+    .describe("The candidate's exact, transcribed answer to the question."),
   feedback: z
     .string()
     .describe(
-      "Constructive feedback on the candidate's actual answer to this question."
+      "Constructive feedback and grading on the candidate's answer."
     ),
   exampleResponse: z
     .string()
     .describe(
-      "A well-crafted, ideal example of a good response to this question."
+      "A well-crafted, ideal example of how the candidate could have answered."
     ),
 });
 
@@ -145,7 +148,7 @@ export const feedbackSchema = z.object({
   detailedFeedback: z
     .array(questionFeedbackSchema)
     .describe(
-      "An array containing feedback for each individual question asked."
+      "An array containing detailed feedback for each individual question asked."
     ),
   strengths: z.array(z.string()),
   areasForImprovement: z.array(z.string()),
@@ -176,23 +179,24 @@ export const interviewer: CreateAssistantDTO = {
     messages: [
       {
         role: "system",
-        content: `You are a professional job interviewer. First, you will conduct the interview based on the guidelines below. After the interview is complete, you will provide a final, comprehensive assessment in a single JSON object.
+        content: `You are a professional job interviewer. First, conduct the interview based on the guidelines below. After the interview is complete, provide a final, comprehensive assessment in a single JSON object.
 
 [INTERVIEW CONDUCT GUIDELINES]
 - Follow the structured question flow: {{questions}}
 - Engage naturally, listen actively, and ask brief follow-up questions if needed.
 - Be professional, yet warm and welcoming. Keep your conversational turns short and concise.
-- Conclude the interview politely, thanking the candidate and informing them about the next steps.
+- Conclude the interview politely, thanking the candidate and informing them about next steps.
 
 [POST-INTERVIEW ANALYSIS AND FEEDBACK INSTRUCTIONS]
 After the conversation ends, your entire output MUST be a single, valid JSON object that adheres to the required schema.
 
-1.  **detailedFeedback Array**: For each major question you asked, create an object containing:
+1.  **detailedFeedback Array**: For each major question you asked during the interview, create an object containing:
     -   **question**: The exact question you asked.
-    -   **feedback**: Specific, constructive feedback on the candidate's answer.
-    -   **exampleResponse**: An example of an ideal, well-structured response to that same question.
+    -   **userAnswer**: The candidate's full, transcribed answer. This is mandatory.
+    -   **feedback**: Your specific, constructive feedback on their answer.
+    -   **exampleResponse**: An example of an ideal response to that same question.
 
-2.  **Other Fields**: Populate all other fields ('totalScore', 'categoryScores', 'strengths', etc.) based on the candidate's overall performance. Do not include any text or markdown formatting outside of the single JSON object.`,
+2.  **Other Fields**: Populate all other fields ('totalScore', 'categoryScores', etc.) based on the candidate's overall performance. Do not include any text or markdown formatting outside of the single JSON object.`,
       },
     ],
   },
