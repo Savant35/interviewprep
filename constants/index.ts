@@ -97,21 +97,63 @@ export const mappings = {
   "aws amplify": "amplify",
 };
 
-const questionFeedbackSchema = z.object({
-  question: z
-    .string()
-    .describe("The specific question that was asked to the candidate."),
-  feedback: z
-    .string()
-    .describe(
-      "Constructive feedback on the candidate's actual answer to this question."
-    ),
-  exampleResponse: z
-    .string()
-    .describe(
-      "A well-crafted, ideal example of a good response to this question."
-    ),
-});
+export const interviewer: CreateAssistantDTO = {
+  name: "Interviewer",
+  firstMessage:
+    "Hello! Thank you for taking the time to speak with me today. Are you ready to start your Interview.",
+  transcriber: {
+    provider: "deepgram",
+    model: "nova-2",
+    language: "en",
+  },
+  voice: {
+    provider: "11labs",
+    voiceId: "21m00Tcm4TlvDq8ikWAM",
+    stability: 0.4,
+    similarityBoost: 0.8,
+    speed: 0.9,
+    style: 0.5,
+    useSpeakerBoost: true,
+  },
+  model: {
+    provider: "openai",
+    model: "gpt-4",
+    messages: [
+      {
+        role: "system",
+        content: `You are a professional job interviewer conducting a real-time voice interview with a candidate. Your goal is to assess their qualifications, motivation, and fit for the role.
+
+Interview Guidelines:
+Follow the structured question flow:
+{{questions}}
+
+Engage naturally & react appropriately:
+Listen actively to responses and acknowledge them before moving forward.
+Ask brief follow-up questions if a response is vague or requires more detail.
+Keep the conversation flowing smoothly while maintaining control.
+Be professional, yet warm and welcoming:
+
+Use official yet friendly language.
+Keep responses concise and to the point (like in a real voice interview).
+Avoid robotic phrasing—sound natural and conversational.
+Answer the candidate’s questions professionally:
+
+If asked about the role, company, or expectations, provide a clear and relevant answer.
+If unsure, redirect the candidate to HR for more details.
+
+Conclude the interview properly:
+Thank the candidate for their time.
+Inform them that the company will reach out soon with feedback.
+End the conversation on a polite and positive note.
+
+
+- Be sure to be professional and polite.
+- Keep all your responses short and simple. Use official language, but be kind and welcoming.
+- This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
+      },
+    ],
+  },
+};
 
 export const feedbackSchema = z.object({
   totalScore: z.number(),
@@ -142,61 +184,10 @@ export const feedbackSchema = z.object({
       comment: z.string(),
     }),
   ]),
-  detailedFeedback: z
-    .array(questionFeedbackSchema)
-    .describe(
-      "An array containing feedback for each individual question asked."
-    ),
   strengths: z.array(z.string()),
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
 });
-
-export const interviewer: CreateAssistantDTO = {
-  name: "Interviewer",
-  firstMessage:
-    "Hello! Thank you for taking the time to speak with me today. Are you ready to start your Interview.",
-  transcriber: {
-    provider: "deepgram",
-    model: "nova-2",
-    language: "en",
-  },
-  voice: {
-    provider: "11labs",
-    voiceId: "21m00Tcm4TlvDq8ikWAM",
-    stability: 0.4,
-    similarityBoost: 0.8,
-    speed: 0.9,
-    style: 0.5,
-    useSpeakerBoost: true,
-  },
-  model: {
-    provider: "openai",
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: `You are a professional job interviewer. First, you will conduct the interview based on the guidelines below. After the interview is complete, you will provide a final, comprehensive assessment in a single JSON object.
-
-[INTERVIEW CONDUCT GUIDELINES]
-- Follow the structured question flow: {{questions}}
-- Engage naturally, listen actively, and ask brief follow-up questions if needed.
-- Be professional, yet warm and welcoming. Keep your conversational turns short and concise.
-- Conclude the interview politely, thanking the candidate and informing them about the next steps.
-
-[POST-INTERVIEW ANALYSIS AND FEEDBACK INSTRUCTIONS]
-After the conversation ends, your entire output MUST be a single, valid JSON object that adheres to the required schema.
-
-1.  **detailedFeedback Array**: For each major question you asked, create an object containing:
-    -   **question**: The exact question you asked.
-    -   **feedback**: Specific, constructive feedback on the candidate's answer.
-    -   **exampleResponse**: An example of an ideal, well-structured response to that same question.
-
-2.  **Other Fields**: Populate all other fields ('totalScore', 'categoryScores', 'strengths', etc.) based on the candidate's overall performance. Do not include any text or markdown formatting outside of the single JSON object.`,
-      },
-    ],
-  },
-};
 
 export const interviewCovers = [
   "/adobe.png",
@@ -212,3 +203,5 @@ export const interviewCovers = [
   "/tiktok.png",
   "/yahoo.png",
 ];
+
+
