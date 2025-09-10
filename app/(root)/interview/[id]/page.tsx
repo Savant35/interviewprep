@@ -60,20 +60,10 @@ const InterviewDetails = async ({ params }: RouteParams) => {
               <div className="space-y-6">
                 {feedback.detailedFeedback.map((item, index) => (
                   <div key={index} className="p-4 bg-dark-300 rounded-md">
-                    <p className="font-bold mb-3">Q: {item.question}</p>
-                    <div className="pl-4 border-l-2 border-dark-400 space-y-4 text-sm">
-                      <div>
-                        <strong className="text-gray-400 block mb-1">Your Answer:</strong>
-                        <p>{item.userAnswer}</p>
-                      </div>
-                      <div>
-                        <strong className="text-blue-400 block mb-1">Feedback:</strong>
-                        <p>{item.feedback}</p>
-                      </div>
-                      <div>
-                        <strong className="text-primary-500 block mb-1">Example Response:</strong>
-                        <p>{item.exampleResponse}</p>
-                      </div>
+                    <p className="font-bold mb-2">Q: {item.question}</p>
+                    <div className="pl-4 border-l-2 border-dark-400 space-y-3 text-sm">
+                      <p><strong className="text-gray-400">Feedback:</strong> {item.feedback}</p>
+                      <p><strong className="text-primary-500">Example Response:</strong> {item.exampleResponse}</p>
                     </div>
                   </div>
                 ))}
